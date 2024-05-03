@@ -13,7 +13,7 @@ api = PassworkAPI(options_override=options_override)
 api.login()
 
 search_params = {
-    "query": "second",
+    "query": "test",
     "tags": [],
     "colors": [],
     "vaultId": None,

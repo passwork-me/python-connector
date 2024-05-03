@@ -11,6 +11,7 @@ __all__ = [
     "encrypt_string",
     "encrypt_customs",
     "decrypt_string",
+    "get_inbox_encryption_key",
 ]
 
 
@@ -88,3 +89,14 @@ def encrypt_customs(custom_fields: list, encryption_key: str, options):
                 encrypted_custom[field] = encrypt_string(value, encryption_key, options)
         encrypted_fields.append(encrypted_custom)
     return encrypted_fields
+
+
+def get_inbox_encryption_key(inbox_password, options):
+    user_info = options.user_info
+    if options.use_master_password:
+        if not user_info.get("keys"):
+            raise Exception({"code": "Can't fetch user private keys"})
+        private_key = decrypt_string(user_info["keys"]["privateCrypted"], options.master_key, options)
+        return crypto_interface.rsa_decrypt(inbox_password["cryptedKey"], private_key).decode()
+    else:
+        return ""

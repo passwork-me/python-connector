@@ -79,17 +79,16 @@ def format_attachments(attachments: list, password_encryption_key: str):
     return result
 
 
-def save_attachment(byte_data_content: bytes, filename: str):
-    download_folder = f"downloaded_attachments"
-    Path(download_folder).mkdir(parents=True, exist_ok=True)
-    download_path = os.path.join(download_folder, filename)
+def save_attachment(byte_data_content: bytes, filename: str, download_path: str):
+    Path(download_path).mkdir(parents=True, exist_ok=True)
+    download_path = os.path.join(download_path, filename)
     with open(download_path, "wb") as file:
         file.write(byte_data_content)
 
     logger.success(f"Decrypted file saved to {download_path}")
 
 
-def decrypt_and_save_password_attachment(attachment: dict, password_encryption_key: str):
+def decrypt_and_save_password_attachment(attachment: dict, password_encryption_key: str, download_path: str):
     if not attachment:
         return None
 
@@ -102,4 +101,4 @@ def decrypt_and_save_password_attachment(attachment: dict, password_encryption_k
     if computed_hash != attachment["hash"]:
         raise Exception("Can't decrypt attachment: hashes are not equal")
 
-    save_attachment(byte_data, attachment["name"])
+    save_attachment(byte_data, attachment["name"], download_path)

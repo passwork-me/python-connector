@@ -128,3 +128,32 @@ def delete_password(password_id: str, options):
         raise Exception
 
     logger.success(f"Deletion of password with id {password_id} completed successfully")
+
+
+def get_inbox_passwords(options):
+    response = requests.get(
+        url=f"{options.host}/sharing/inbox/list", headers=options.request_headers
+    )
+
+    if is_failed_status_code(
+        status_code=response.status_code,
+        prefix=f"Error when getting list of inbox passwords",
+    ):
+        raise Exception
+
+    return response.json().get("data")
+
+
+def get_inbox_password(inbox_password_id, options):
+    response = requests.post(
+        url=f"{options.host}/sharing/inbox/{inbox_password_id}", headers=options.request_headers
+    )
+
+    if is_failed_status_code(
+        status_code=response.status_code,
+        prefix=f"Error when getting inbox password id: {inbox_password_id}",
+    ):
+        raise Exception
+
+    inbox_password = response.json().get("data")
+    return inbox_password

@@ -3,9 +3,11 @@ import re
 import hashlib
 import binascii
 from base64 import b64encode, b64decode
+from cryptography.hazmat.primitives import padding, serialization
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.asymmetric import padding as padding_rsa
 from cryptography.hazmat.backends import default_backend
+
 from utils.base32 import base32
 import secrets
 
@@ -17,6 +19,8 @@ __all__ = [
     "get_master_key",
     "get_request_headers",
     "generate_string",
+    'rsa_decrypt',
+    'b64encode',
 ]
 
 
@@ -124,3 +128,15 @@ def get_request_headers(token: str, master_key: str, use_master_password: bool):
         master_key_hash = hashlib.sha256(master_key.encode()).hexdigest()
         headers["Passwork-MasterHash"] = master_key_hash
     return headers
+
+
+def rsa_decrypt(data, private_key):
+    private_key = serialization.load_pem_private_key(
+        private_key.encode(),  # Convert to bytes
+        password=None
+    )
+    decrypted_data = private_key.decrypt(
+        b64decode(data),
+        padding_rsa.PKCS1v15()
+    )
+    return decrypted_data

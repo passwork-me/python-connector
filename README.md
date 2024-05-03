@@ -81,6 +81,8 @@ found_passwords = api.search_password(**search_params)
 1. Get password and vault items
 ```python
 PASSWORD_ID = "0123456789abcdefghijklmn"
+DOWNLOAD_ATTACHMENTS_PATH = os.path.join("../downloaded_attachments", PASSWORD_ID)
+
 password_item = api.get_password(password_id=PASSWORD_ID)
 vault_id = password_item.get("vaultId")
 vault_item = api.get_vault(vault_id=vault_id)
@@ -92,7 +94,8 @@ vault_item = api.get_vault(vault_id=vault_id)
 vault_password = api.get_vault_password(vault_item=vault_item)
 password_encryption_key = api.get_password_encryption_key(
     password_item=password_item,
-    vault_password=vault_password
+    vault_password=vault_password,
+    download_path=DOWNLOAD_ATTACHMENTS_PATH,
 )
 ```
 
@@ -129,6 +132,12 @@ full_password_info = {
 pretty_data = json.dumps(full_password_info, indent=4)
 logger.success(pretty_data)
 ```
+
+### [Get inbox password info](./examples/get_inbox_password.py)
+<b style='color:green'>NOTE</b> `PASSWORD_ID` must contain the identifier of the target password, in the example a non-existent identifier is specified. without explicitly specifying `PASSWORD_ID` the information for the last password in Inbox will be retrieved.
+
+Steps are similar to the previous example ([get full password info](./examples/get_password.py)).
+
 
 ### [Add password](./examples/add_password.py)
 <b style='color:green'>NOTE</b> If `VAULT_ID` is specified, the `PASSWORD_ID` variable may be empty.

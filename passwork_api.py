@@ -5,6 +5,8 @@ from rest_modules.passwords import (
     search_passwords,
     add_password,
     delete_password,
+    get_inbox_passwords,
+    get_inbox_password,
 )
 from rest_modules.vaults import get_vault
 from utils import (
@@ -13,6 +15,7 @@ from utils import (
     get_customs,
     decrypt_and_save_password_attachment,
     decrypt_string,
+    get_inbox_encryption_key,
 )
 
 
@@ -35,6 +38,9 @@ class PassworkAPI:
         REST Endpoint: POST /auth/logout
         """
         self.session_options.logout()
+
+    def get_user_info(self):
+        self.session_options.get_user_info()
 
     def get_password(self, password_id: str) -> dict:
         """Retrieves a password by its identifier.
@@ -106,7 +112,7 @@ class PassworkAPI:
         """
         return get_customs(password_item, password_encryption_key, self.session_options)
 
-    def get_attachments(self, password_item: dict, password_encryption_key: str):
+    def get_attachments(self, password_item: dict, password_encryption_key: str, download_path: str):
         """Retrieves and decrypts attachments for a password item
         than saves results into downloaded_attachments folder.
 
@@ -115,11 +121,14 @@ class PassworkAPI:
         Args:
             password_item: The item containing encrypted attachments
             password_encryption_key: The encryption key
+            download_path: Path for downloading attachments
         """
+
         attachments = get_attachments(password_item=password_item, options=self.session_options)
         if not attachments:
             return None
-        [decrypt_and_save_password_attachment(attachment, password_encryption_key) for attachment in attachments]
+        [decrypt_and_save_password_attachment(attachment, password_encryption_key, download_path)
+         for attachment in attachments]
 
     def delete_password(self, password_id: str):
         """Deletes a password by its identifier.
@@ -197,3 +206,40 @@ class PassworkAPI:
             vault_password,
             options=self.session_options,
         )
+
+    def get_inbox_passwords(self) -> list[dict]:
+        """Retrieves a list of all inbox passwords from the configured source.
+
+        REST Endpoint: POST /sharing/inbox/list
+
+        Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents an inbox password.
+        """
+
+        return get_inbox_passwords(self.session_options)
+
+    def get_inbox_password(self, inbox_password_id: str) -> dict:
+        """Retrieves a specific inbox password based on its ID.
+
+        REST Endpoint: POST /sharing/inbox/{inbox_password_id}
+
+        Args:
+            inbox_password_id (str): The unique identifier of the inbox password to retrieve.
+
+        Returns:
+            dict: A dictionary containing the details of the requested inbox password.
+        """
+
+        return get_inbox_password(inbox_password_id, self.session_options)
+
+    def get_inbox_encryption_key(self, inbox_password) -> str:
+        """Decrypts the encryption key for a password item.
+
+        Args:
+            inbox_password: Inbox password item
+
+        Returns:
+            str: The encryption key
+        """
+
+        return get_inbox_encryption_key(inbox_password, self.session_options)

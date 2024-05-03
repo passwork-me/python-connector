@@ -41,3 +41,12 @@ class Users:
         if is_failed_status_code(prefix="Failed to log out", status_code=response.status_code):
             raise Exception
         return response.json().get("data")
+
+    def get_user_info(self):
+        response = requests.get(
+            url=f"{self.options.host}/user/info",
+            headers=self.options.request_headers,
+        )
+        if is_failed_status_code(prefix="Failed to get user info", status_code=response.status_code):
+            raise Exception
+        return response.json().get("data")

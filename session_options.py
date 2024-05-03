@@ -21,12 +21,16 @@ class SessionOptions:
         self.refresh_token = None
         self.master_key = None
         self.request_headers = None
+        self.user_info = None
 
     def login(self):
         self.token, self.refresh_token = self.user.login()
 
     def logout(self):
         self.user.logout()
+
+    def get_user_info(self):
+        self.user_info = self.user.get_user_info()
 
     def create_headers(self):
         mk_options = self.user.get_mk_options()

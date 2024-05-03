@@ -1,4 +1,6 @@
 import json
+import os.path
+
 from loguru import logger
 from passwork_api import PassworkAPI
 
@@ -14,6 +16,7 @@ api = PassworkAPI(options_override=options_override)
 api.login()
 
 PASSWORD_ID = "0123456789abcdefghijklmn"
+DOWNLOAD_ATTACHMENTS_PATH = os.path.join("../downloaded_attachments", PASSWORD_ID)
 
 # get password item
 password_item = api.get_password(password_id=PASSWORD_ID)
@@ -35,7 +38,9 @@ password_item["custom"] = api.get_customs(
 
 # download password attachments
 api.get_attachments(
-    password_item=password_item, password_encryption_key=password_encryption_key
+    password_item=password_item,
+    password_encryption_key=password_encryption_key,
+    download_path=DOWNLOAD_ATTACHMENTS_PATH,
 )
 
 # get password plain text
